@@ -4,8 +4,10 @@ go 1.19
 
 require (
 	github.com/go-playground/validator v9.31.0+incompatible
+	github.com/golang-migrate/migrate v3.5.4+incompatible
 	github.com/labstack/echo/v4 v4.9.0
 	github.com/mattn/go-sqlite3 v1.14.15
+	github.com/pkg/errors v0.9.1
 )
 
 require (
