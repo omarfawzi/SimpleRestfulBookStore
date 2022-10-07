@@ -21,7 +21,7 @@ func Singleton() *Manager {
 	return manager
 }
 
-func Close() {
+func (manager *Manager) Close() {
 	err := manager.connection.Close()
 	if err != nil {
 		return
