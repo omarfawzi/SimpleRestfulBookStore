@@ -22,7 +22,7 @@ func New() *Bootstrap {
 }
 
 func (bootstrap *Bootstrap) Start() {
-	defer bootstrap.dbManager.Close()
+	defer bootstrap.dbManager.CloseConnection()
 	bootstrap.echo.Use(errorMiddleware.Handle)
 	bootstrap.bookRouter.RegisterRoutes(bootstrap.echo)
 	bootstrap.echo.Logger.Fatal(bootstrap.echo.Start(":1323"))
