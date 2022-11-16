@@ -15,29 +15,32 @@ const BaseUri = "http://localhost:1323/"
 const CreateBookUri = BaseUri + "books"
 const GetBooksUri = BaseUri + "books"
 
+var bookIdChannel = make(chan int)
+var wg = new(sync.WaitGroup)
+var mutex = &sync.Mutex{}
+
 func main() {
-	wg := new(sync.WaitGroup)
 	wg.Add(4)
 
-	bookIdChannel := make(chan int)
-
-	go createBook(wg, bookIdChannel)
-	go printBook(wg, bookIdChannel)
-	go createBook(wg, bookIdChannel)
-	go printBook(wg, bookIdChannel)
+	go createBook(bookIdChannel)
+	go printBook(bookIdChannel)
+	go createBook(bookIdChannel)
+	go printBook(bookIdChannel)
 
 	wg.Wait()
 }
 
-func createBook(wg *sync.WaitGroup, bookIdChannel chan int) *models.Book {
+func createBook(bookIdChannel chan int) *models.Book {
 	defer wg.Done()
 
 	fakeBook := new(models.Book)
 
+	mutex.Lock()
 	err := faker.FakeData(&fakeBook)
 	if err != nil {
 		log.Fatal(err)
 	}
+	mutex.Unlock()
 
 	postBody, _ := json.Marshal(fakeBook)
 
@@ -58,7 +61,7 @@ func createBook(wg *sync.WaitGroup, bookIdChannel chan int) *models.Book {
 	return book
 }
 
-func printBook(wg *sync.WaitGroup, bookIdChannel chan int) {
+func printBook(bookIdChannel chan int) {
 	defer wg.Done()
 	bookId := <-bookIdChannel
 
@@ -74,6 +77,5 @@ func printBook(wg *sync.WaitGroup, bookIdChannel chan int) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("%v", book)
-	fmt.Println()
+	fmt.Printf("%v\n", book)
 }
